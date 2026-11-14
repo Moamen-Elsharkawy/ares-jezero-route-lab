@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0c1420" />
+  <meta name="description" content="Verified Mars HiRISE topography and experimental route comparisons in Jezero Crater." />
+  <title>ARES / Jezero Route Lab</title>
+  <link rel="stylesheet" href="/src/styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-emblem">A<span>✦</span></div><div><strong>ARES <em>/</em> NAV</strong><small>NASA TEAM • RED COMPASS</small></div></div>
+      <div class="sidebar-inner">
+        <div class="eyebrow"><span class="pulse"></span> MISSION CONTROL / LIVE DEMO</div>
+        <h1>Explore the <span>red planet.</span><br/>Plan the next move.</h1>
+        <p class="lead">Measured Martian terrain, a 3D relief model, and transparent route comparisons around Jezero Crater.</p>
+        <div class="section-rule"></div>
+        <div class="section-tag">01 / NAVIGATION INPUTS</div>
+        <label class="field-label" for="presets">SCENARIO</label>
+        <select id="presets" aria-label="Choose navigation scenario">
+          <option value="delta">Western delta approach</option>
+          <option value="ridge">Ridge reconnaissance</option>
+          <option value="cross">Traverse comparison</option>
+        </select>
+        <div class="waypoints">
+          <button class="waypoint chosen" id="set-start" type="button" aria-pressed="true">
+            <span class="waypoint-symbol start">A</span><span><strong>Start point</strong><small id="start-coords">Select on map</small></span><span class="pin-label">PICK</span>
+          </button>
+          <div class="waypoint-connector"></div>
+          <button class="waypoint" id="set-end" type="button" aria-pressed="false">
+            <span class="waypoint-symbol end">B</span><span><strong>Science target</strong><small id="end-coords">Select on map</small></span><span class="pin-label">PICK</span>
+          </button>
+        </div>
+        <div class="hint">Choose A or B, then click the terrain to move that point.</div>
+        <label class="field-label" for="strategy">ROUTE STRATEGY</label>
+        <select id="strategy" aria-label="Choose route strategy">
+          <option value="gentle">Slope-aware estimate</option>
+          <option value="shortest">Shortest traversable estimate</option>
+        </select>
+        <button id="reset-route" class="primary-action" type="button">RECALCULATE ROUTE <span>↗</span></button>
+        <div class="section-rule"></div>
+        <div class="section-tag">02 / ELEVATION MODEL</div>
+        <div class="slider-head"><label class="field-label" for="exaggeration">3D VERTICAL EXAGGERATION</label><span id="exaggeration-value">5×</span></div>
+        <input type="range" id="exaggeration" min="1" max="12" step="1" value="5" aria-label="Vertical exaggeration" />
+        <div class="scale-line"><span>1× true scale</span><span>12× display</span></div>
+      </div>
+      <div class="sidebar-footer">
+        <span class="sensor-icon">◎</span><div><strong>REAL OBSERVED ELEVATIONS</strong><small>USGS / NASA MRO HiRISE</small></div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar">
+        <div class="breadcrumb">SOLAR SYSTEM <span>/</span> MARS <span>/</span> JEZERO CRATER</div>
+        <div class="top-badges"><span class="data-status"><i></i> DATA VERIFIED FROM COG</span><span class="edition">DEMO BUILD 01</span></div>
+      </header>
+      <section class="hero-row">
+        <div><div class="eyebrow">18.43° N / 77.445° E</div><h2>Jezero <span>Terrain Explorer</span></h2><p>Western delta survey • NASA Space Apps Challenge • Red Compass</p></div>
+        <div class="view-tabs" role="group" aria-label="Map display mode">
+          <button type="button" class="tab active" data-mode="3d" aria-pressed="true">▧ <span>3D RELIEF</span></button>
+          <button type="button" class="tab" data-mode="2d" aria-pressed="false">▤ <span>2D MAP</span></button>
+        </div>
+      </section>
+      <section class="viewport-panel">
+        <div class="viewport-topline"><div><span class="online-pip"></span> <strong id="viewport-label">3D TOPOGRAPHIC MODEL</strong> <span class="separator">/</span> <span id="readout">LOADING REAL DTM…</span></div><div class="coord-flag">MARS 2015 · O-CENTRIC</div></div>
+        <div class="viewport" id="viewport">
+          <canvas id="scene3d" aria-label="Interactive 3D Martian elevation terrain"></canvas>
+          <canvas id="map2d" class="hidden" aria-label="Interactive 2D Martian elevation map"></canvas>
+          <div class="map-scanlines"></div>
+          <div class="compass"><div>N</div><div class="compass-needle">↑</div></div>
+          <div class="viewport-caption"><span class="mini-line"></span><div>JZ-001 / WESTERN SURVEY<br/><strong id="view-caption">DRAG TO ORBIT · SCROLL TO ZOOM</strong></div></div>
+          <div class="data-loading" id="loading">CALIBRATING TERRAIN DATA…</div>
+        </div>
+        <div class="viewport-foot"><span>GRID <b id="grid-info">—</b></span><span>MAP AREA <b id="extent-info">—</b></span><span>DATA COVERAGE <b id="coverage-info">—</b></span></div>
+      </section>
+      <section class="insight-grid">
+        <article class="insight"><div class="insight-label">ROUTE LENGTH <span>01</span></div><div class="value"><span id="distance">—</span><small>m</small></div><div class="info">Horizontal distance along estimated path</div></article>
+        <article class="insight"><div class="insight-label">CUMULATIVE CLIMB <span>02</span></div><div class="value"><span id="ascent">—</span><small>m</small></div><div class="info">Total positive altitude gain</div></article>
+        <article class="insight"><div class="insight-label">PEAK PATH SLOPE <span>03</span></div><div class="value"><span id="slope">—</span><small>°</small></div><div class="info">DEM-sampled gradient, model-dependent</div></article>
+        <article class="insight accent"><div class="insight-label">CURRENT STATUS <span>04</span></div><div class="status-value" id="route-status">LOADING</div><div class="info" id="route-note">Preparing elevation grid</div></article>
+      </section>
+      <footer class="main-footer"><div><span>DATA PROVENANCE</span><strong id="source-description">Loading USGS source metadata…</strong></div><a id="source-link" href="https://stac.astrogeology.usgs.gov/docs/data/mars/hirise_dtms/" target="_blank" rel="noopener noreferrer">VIEW OFFICIAL SOURCE ↗</a></footer>
+      <div class="caveat"><span>ⓘ</span> Experimental routing on a sampled DTM. The 28° cutoff and slope-cost model are demonstration assumptions, not validated EVA or rover-safety constraints. Data gaps are never bridged. Visual vertical exaggeration does not affect route calculations.</div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
